@@ -1,0 +1,36 @@
+version: '3.9'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  db:
+    image: postgres:16
+    ports:
+      - "6543:5432"
+    env_file:
+      - .env
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    restart: always
+
+  redis:
+    image: redis:7.0-alpine  # Redis latest version with Alpine Linux for a smaller image size
+    ports:
+      - "6379:6379"  # Default Redis port
+    volumes:
+      - redis_data:/data  # Volume for Redis data persistence
+    restart: always
+
+volumes:
+  db_data:
+  redis_data:
